@@ -5,10 +5,15 @@ using UnityEngine;
 public class TerrainGenerator : MonoBehaviour
 {
     public Terrain terrain;
-    public int terrainWidth = 800;  // Default width
-    public int terrainLength = 800; // Default length
-    public float terrainHeight = 0.01f;  // Default height
+    public int terrainWidth = 2049;  // Default width
+    public int terrainLength = 2049; // Default length
+    public float terrainHeight = 200f;  // Default height
     public float detailDensity = 0.3f; // Default density of vegetation
+
+    public Material grassMaterial;
+
+    public float scale = 3f;           // Controls the scale of the noise
+    public float heightMultiplier = 1f; // Multiplies the height of the noise
 
     void Start()
     {
@@ -17,12 +22,18 @@ public class TerrainGenerator : MonoBehaviour
         {
             terrain.terrainData = GenerateTerrain(terrain.terrainData);
             AddVegetation();
-            terrain.transform.position = new Vector3(-150f, -0.1f, -300f);
+            terrain.transform.position = new Vector3(0, -0.1f, 0);
         }
         else
         {
             Debug.LogError("Terrain not found");
         }
+
+        if (grassMaterial != null)
+        {
+            terrain.materialTemplate = grassMaterial;
+        }
+
     }
 
     TerrainData GenerateTerrain(TerrainData terrainData)
@@ -40,11 +51,14 @@ public class TerrainGenerator : MonoBehaviour
         {
             for (int y = 0; y < terrainLength; y++)
             {
-                heights[x, y] = Mathf.PerlinNoise(x * .1f, y * .1f) * .5f;
+                float xCoord = (float)x / terrainWidth * scale;
+                float yCoord = (float)y / terrainLength * scale;
+                heights[x, y] = Mathf.PerlinNoise(xCoord, yCoord) * heightMultiplier;
             }
         }
         return heights;
     }
+
 
     void AddVegetation()
     {
@@ -53,7 +67,7 @@ public class TerrainGenerator : MonoBehaviour
             for (int y = 0; y < terrainLength; y++)
             {
                 // Lower the chance for placing vegetation in each iteration
-                bool placeTree = Random.Range(0.0f, 1.0f) < (detailDensity * 0.07f);
+                bool placeTree = Random.Range(0.0f, 1.0f) < (detailDensity * 0.02f);
                 bool placeMushroom = Random.Range(0.0f, 1.0f) < (detailDensity * 0.05f);
 
                 float unitX = (float)x / terrainWidth;
@@ -90,6 +104,8 @@ public class TerrainGenerator : MonoBehaviour
     {
         if (terrain != null)
         {
+            float[,] resetHeights = new float[terrain.terrainData.heightmapResolution, terrain.terrainData.heightmapResolution];
+            terrain.terrainData.SetHeights(0, 0, resetHeights);
             // Clear all tree and mushroom instances
             terrain.terrainData.treeInstances = new TreeInstance[0];
         }
