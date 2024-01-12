@@ -4,32 +4,26 @@ using UnityEngine;
 
 public class CityGenerator : MonoBehaviour
 {
-    public int gridRows = 10;
-    public int gridColumns = 10;
-    public float gridSize = 11f; // Distance between buildings
-    public int numberOfCities = 2;
+    public int gridRows = 11;
+    public int gridColumns = 11;
+    public float gridSize = 15f; // Distance between buildings
 
     private bool[,] gridOccupied;
 
     void Start()
     {
-        gridOccupied = new bool[gridRows, gridColumns];
-        for (int i = 0; i < numberOfCities; i++)
-        {
-            GenerateCity(i);
-        }
+        GenerateCity();
     }
 
-    void GenerateCity(int cityIndex)
+    void GenerateCity()
     {
         gridOccupied = new bool[gridRows, gridColumns];
-        Random.InitState(cityIndex); // Initialize random seed based on the city index
 
-        int buildingsToGenerate = 6; // Randomize number of buildings
+        int buildingsToGenerate = Random.Range(5, 7); // Randomize number of buildings
         for (int i = 0; i < buildingsToGenerate; i++)
         {
             Vector3 position = GetRandomBuildingPosition();
-            GenerateBuilding(position, cityIndex);
+            GenerateBuilding(position);
         }
     }
 
@@ -43,36 +37,26 @@ public class CityGenerator : MonoBehaviour
         } while (gridOccupied[row, column]);
 
         gridOccupied[row, column] = true;
-
-        float xPosition = (row + 0.5f) * gridSize; // Center of the grid cell
-        float zPosition = (column + 0.5f) * gridSize; // Center of the grid cell
-        return new Vector3(xPosition, 0, zPosition);
+        return new Vector3(row * gridSize, 0, column * gridSize);
     }
 
-    void GenerateBuilding(Vector3 position, int cityIndex)
+    void GenerateBuilding(Vector3 position)
     {
-        float offsetMultiplier = 3f; // Adjust this value to increase or decrease the gap
-        position += new Vector3(cityIndex * gridRows * gridSize * offsetMultiplier, 0, 0);
-
         GameObject building = new GameObject("Building");
         building.transform.position = position;
 
         MeshFilter meshFilter = building.AddComponent<MeshFilter>();
         MeshRenderer meshRenderer = building.AddComponent<MeshRenderer>();
-
         meshFilter.mesh = GenerateBuildingMesh();
 
         Material buildingMaterial = new Material(Shader.Find("Standard"));
         buildingMaterial.color = new Color(Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f));
         meshRenderer.material = buildingMaterial;
 
-        float minWidthDepth = 6.0f;
-        float minHeight = 10.0f;
-        float maxHeight = 20.0f;
         building.transform.localScale = new Vector3(
-            Mathf.Max(Random.Range(1, 5), minWidthDepth),
-            Random.Range(minHeight, maxHeight),
-            Mathf.Max(Random.Range(1, 5), minWidthDepth)
+            Mathf.Max(Random.Range(1, 5), 6.0f),
+            Random.Range(10.0f, 20.0f),
+            Mathf.Max(Random.Range(1, 5), 6.0f)
         );
     }
 
