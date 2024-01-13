@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor; // This is required for AssetDatabase
 using UnityEngine;
 
 public class TerrainGenerator : MonoBehaviour
@@ -18,6 +19,20 @@ public class TerrainGenerator : MonoBehaviour
     void Start()
     {
         terrain = Terrain.activeTerrain;
+
+        Material skyboxMaterial = AssetDatabase.LoadAssetAtPath<Material>("Assets/Polytope Studio/Lowpoly_Environments/Sources/Materials/PT_Skybox_mat.mat");
+
+        // Check if the skybox material is loaded
+        if (skyboxMaterial != null)
+        {
+            // Apply the skybox material to the scene
+            RenderSettings.skybox = skyboxMaterial;
+        }
+        else
+        {
+            Debug.LogError("Skybox material not found");
+        }
+
         if (terrain != null)
         {
             terrain.terrainData = GenerateTerrain(terrain.terrainData);
@@ -47,12 +62,15 @@ public class TerrainGenerator : MonoBehaviour
     float[,] GenerateHeights()
     {
         float[,] heights = new float[terrainWidth, terrainLength];
+        float offsetX = Random.Range(0f, 100f); // Random offset for X
+        float offsetY = Random.Range(0f, 100f); // Random offset for Y
+
         for (int x = 0; x < terrainWidth; x++)
         {
             for (int y = 0; y < terrainLength; y++)
             {
-                float xCoord = (float)x / terrainWidth * scale;
-                float yCoord = (float)y / terrainLength * scale;
+                float xCoord = ((float)x / terrainWidth * scale) + offsetX;
+                float yCoord = ((float)y / terrainLength * scale) + offsetY;
                 heights[x, y] = Mathf.PerlinNoise(xCoord, yCoord) * heightMultiplier;
             }
         }

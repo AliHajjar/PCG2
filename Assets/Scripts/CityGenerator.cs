@@ -10,22 +10,57 @@ public class CityGenerator : MonoBehaviour
 
     private bool[,] gridOccupied;
 
-    void Start()
+    void Awake()
     {
+        gridOccupied = new bool[gridRows, gridColumns];
+        GenerateRoad();
         GenerateCity();
+        GeneratePlane();
     }
 
     void GenerateCity()
     {
-        gridOccupied = new bool[gridRows, gridColumns];
-
-        int buildingsToGenerate = Random.Range(5, 7); // Randomize number of buildings
+        int buildingsToGenerate = Random.Range(7, 9); // Randomize number of buildings
         for (int i = 0; i < buildingsToGenerate; i++)
         {
             Vector3 position = GetRandomBuildingPosition();
-            GenerateBuilding(position);
+            if (position != Vector3.zero) // Check if a valid position was found
+            {
+                GenerateBuilding(position);
+            }
         }
     }
+
+    void GenerateRoad()
+    {
+        // Determine the row for the road (assuming the road is horizontal)
+        int roadRow = gridRows / 2;
+
+        // The buffer size on each side of the road
+        int bufferSize = 1;
+
+        // Mark the road's cells and buffer zone as occupied
+        for (int col = 0; col < gridColumns; col++)
+        {
+            for (int buffer = -bufferSize; buffer <= bufferSize; buffer++)
+            {
+                int rowToMark = roadRow + buffer;
+                if (rowToMark >= 0 && rowToMark < gridRows) // Check to avoid indexing outside the grid
+                {
+                    gridOccupied[rowToMark, col] = true;
+                }
+            }
+        }
+
+        // Instantiate and set up the road GameObject
+        GameObject roadObject = new GameObject("Road");
+        roadObject.AddComponent<Road>();
+        float roadLength = gridSize / 1.53f; // Adjust the length here
+        roadObject.transform.position = new Vector3(gridRows * gridSize / 2, 0, roadRow * gridSize);
+        roadObject.transform.localScale = new Vector3(1f, 1f, roadLength);
+
+    }
+
 
     Vector3 GetRandomBuildingPosition()
     {
@@ -34,10 +69,14 @@ public class CityGenerator : MonoBehaviour
         {
             row = Random.Range(0, gridRows);
             column = Random.Range(0, gridColumns);
-        } while (gridOccupied[row, column]);
+            if (!gridOccupied[row, column])
+            {
+                gridOccupied[row, column] = true; // Mark the cell as occupied
+                return new Vector3(row * gridSize, 0, column * gridSize);
+            }
+        } while (true); // Keep looking until a free cell is found
 
-        gridOccupied[row, column] = true;
-        return new Vector3(row * gridSize, 0, column * gridSize);
+        return Vector3.zero; // Return a zero vector if no position is found
     }
 
     void GenerateBuilding(Vector3 position)
@@ -83,6 +122,19 @@ public class CityGenerator : MonoBehaviour
         mesh.RecalculateNormals();
 
         return mesh;
+    }
+
+    void GeneratePlane()
+    {
+        float planeWidth = gridRows * gridSize;
+        float planeHeight = gridColumns * gridSize;
+
+        // Adjust the size of the plane
+        Vector3 planeScale = new Vector3(planeWidth / 8f, 1f, planeHeight / 8f); // Unity's default plane size is 10x10 units
+
+        GameObject plane = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        plane.transform.localScale = planeScale;
+        plane.transform.position = new Vector3(planeWidth / 2f, -0.1f, planeHeight / 2f);
     }
 
 }

@@ -359,7 +359,7 @@ MonoBehaviour:
   gridRows: 11
   gridColumns: 11
   gridSize: 15
-  cityIndex: 0
+  roadMaterial: {fileID: 2100000, guid: 5280a4264f04ced4d8fcb248c321d489, type: 2}
 --- !u!64 &2026037137
 MeshCollider:
   m_ObjectHideFlags: 0

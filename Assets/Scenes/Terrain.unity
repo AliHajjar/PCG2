@@ -419,7 +419,7 @@ MonoBehaviour:
   terrainLength: 2049
   terrainHeight: 200
   detailDensity: 0.3
-  grassMaterial: {fileID: 2100000, guid: 516e6f11e8de6624eb6be4bac8c14555, type: 2}
+  grassMaterial: {fileID: 2100000, guid: 5d8af8f434f69794eabd684fb44b4fbf, type: 2}
   scale: 3
   heightMultiplier: 1
 --- !u!1660057539 &9223372036854775807
