@@ -11,6 +11,8 @@ public class TerrainGenerator : MonoBehaviour
     public float terrainHeight = 200f;  // Default height
     public float detailDensity = 0.3f; // Default density of vegetation
 
+    public GameObject playerPrefab;
+
     public Material grassMaterial;
 
     public float scale = 3f;           // Controls the scale of the noise
@@ -48,6 +50,8 @@ public class TerrainGenerator : MonoBehaviour
         {
             terrain.materialTemplate = grassMaterial;
         }
+
+        SpawnPlayerRandomly();
 
     }
 
@@ -141,5 +145,25 @@ public class TerrainGenerator : MonoBehaviour
             lightmapColor = Color.white
         };
     }
+
+    void SpawnPlayerRandomly()
+    {
+        if (playerPrefab != null)
+        {
+            // Calculate a random position within the terrain bounds
+            float randomX = Random.Range(0, terrainWidth);
+            float randomZ = Random.Range(0, terrainLength);
+            float height = terrain.terrainData.GetHeight((int)randomX, (int)randomZ);
+            Vector3 randomPosition = new Vector3(randomX, height, randomZ);
+
+            // Instantiate the player at the random position
+            Instantiate(playerPrefab, randomPosition, Quaternion.identity);
+        }
+        else
+        {
+            Debug.LogError("Player prefab not assigned");
+        }
+    }
+
 
 }

@@ -419,6 +419,7 @@ MonoBehaviour:
   terrainLength: 2049
   terrainHeight: 200
   detailDensity: 0.3
+  playerPrefab: {fileID: 1773623360729482, guid: 11aaea5348574644a9eb4f4504fcce3f, type: 3}
   grassMaterial: {fileID: 2100000, guid: 5d8af8f434f69794eabd684fb44b4fbf, type: 2}
   scale: 3
   heightMultiplier: 1
