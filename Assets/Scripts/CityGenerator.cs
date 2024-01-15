@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class CityGenerator : MonoBehaviour
@@ -18,6 +19,22 @@ public class CityGenerator : MonoBehaviour
         GeneratePlane();
     }
 
+    private void Start()
+    {
+        Material skyboxMaterial = AssetDatabase.LoadAssetAtPath<Material>("Assets/Polytope Studio/Lowpoly_Environments/Sources/Materials/PT_Skybox_mat.mat");
+
+        // Check if the skybox material is loaded
+        if (skyboxMaterial != null)
+        {
+            // Apply the skybox material to the scene
+            RenderSettings.skybox = skyboxMaterial;
+        }
+        else
+        {
+            Debug.LogError("Skybox material not found");
+        }
+    }
+
     void GenerateCity()
     {
         int buildingsToGenerate = Random.Range(7, 9); // Randomize number of buildings
@@ -30,6 +47,8 @@ public class CityGenerator : MonoBehaviour
             }
         }
     }
+
+
 
     void GenerateRoad()
     {
